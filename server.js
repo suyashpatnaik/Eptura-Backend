@@ -21,7 +21,10 @@ const allowedOrigins = [
   'https://eptura-frontend-12.vercel.app'
 ];
 
+// Place these lines before any route or middleware that needs JSON/body parsing or security headers
+app.use(express.json({ limit: '10mb' }));
 app.use(helmet());
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
