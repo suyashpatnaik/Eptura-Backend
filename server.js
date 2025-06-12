@@ -17,8 +17,8 @@ const openai = new OpenAI({
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://eptura-frontend-12.vercel.app', // ✅ your deployed frontend
-  'https://eptura-frontend.vercel.app'     // ✅ (if using both, add both)
+  'https://eptura-frontend.vercel.app',
+  'https://eptura-frontend-12.vercel.app'
 ];
 
 app.use(helmet());
@@ -27,6 +27,7 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.error(`❌ CORS blocked for origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
