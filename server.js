@@ -281,6 +281,10 @@ app.get('/api/knowledge/stats', (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+  res.send('Eptura Backend is running!');
+});
+
 async function initialize() {
   console.log('🚀 Initializing...');
   if (!lastScrapeTime || (Date.now() - lastScrapeTime) > SCRAPE_INTERVAL) {
