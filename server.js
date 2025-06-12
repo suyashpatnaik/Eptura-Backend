@@ -285,13 +285,17 @@ app.get('/', (req, res) => {
   res.send('Eptura Backend is running!');
 });
 
-// Initialize scraping logic on cold start (for serverless)
-initialize();
+async function initialize() {
+  console.log('🚀 Initializing...');
+  if (!lastScrapeTime || (Date.now() - lastScrapeTime) > SCRAPE_INTERVAL) {
+    await scrapeEpturaKnowledge();
+  }
 
-// Do NOT use app.listen() on Vercel
-// app.listen(PORT, async () => {
-//   console.log(`✅ Server running on http://localhost:${PORT}`);
-//   await initialize();
-// });
+  setInterval(() => {
+    console.log('🕒 Scheduled scrape...');
+    scrapeEpturaKnowledge();
+  }, SCRAPE_INTERVAL);
+}
+initialize();
 
 module.exports = app;
