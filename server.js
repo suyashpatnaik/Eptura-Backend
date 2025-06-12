@@ -14,12 +14,22 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://eptura-frontend-12.vercel.app', // ✅ your deployed frontend
+  'https://eptura-frontend.vercel.app'     // ✅ (if using both, add both)
+];
+
 app.use(helmet());
 app.use(cors({
-  origin: [
-    'http://localhost:5173', // add this
-    'http://localhost:5174'  // keep this if you use both
-  ],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
