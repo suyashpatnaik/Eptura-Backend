@@ -15,27 +15,28 @@ const openai = new OpenAI({
 });
 
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'https://eptura-frontend.vercel.app',
-  'https://eptura-frontend-12.vercel.app'
+  'https://eptura-frontend-12.vercel.app', // your deployed frontend
+  'http://localhost:3000',                 // local dev (optional)
+  'http://localhost:5173'                  // local dev (optional)
 ];
 
-// Place these lines before any route or middleware that needs JSON/body parsing or security headers
+
+app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(helmet());
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.error(`❌ CORS blocked for origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '10mb' }));
 
 const limiter = rateLimit({
