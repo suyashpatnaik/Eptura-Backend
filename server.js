@@ -16,8 +16,6 @@ const openai = new OpenAI({
 
 const allowedOrigins = [
   'https://eptura-frontend-12.vercel.app', // your deployed frontend
-  'http://localhost:3000',                 // local dev (optional)
-  'http://localhost:5173'                  // local dev (optional)
 ];
 
 
