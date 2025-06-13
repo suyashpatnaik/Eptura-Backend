@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const app = express();
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { OpenAI } = require('openai');
@@ -7,16 +8,13 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 require('dotenv').config();
 
-const app = express();
 const PORT = process.env.PORT || 3001;
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const allowedOrigins = [
-  'https://eptura-frontend-12.vercel.app', // your deployed frontend
-];
+const allowedOrigins = ['https://eptura-frontend-12.vercel.app'];
 
 app.use(express.json({ limit: '10mb' }));
 app.use(helmet());
@@ -35,7 +33,7 @@ app.use(
   allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -160,11 +158,7 @@ function extractExcerpt(content, query, length = 300) {
 // --- API ROUTES ---
 
 app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    knowledgeBaseSize: knowledgeBase.size,
-    lastScrapeTime
-  });
+  res.status(200).json({ status: 'OK' });
 });
 
 app.post('/api/chat', async (req, res) => {
@@ -282,6 +276,23 @@ app.get('/api/knowledge/stats', (req, res) => {
 
 app.get('/', (req, res) => {
   res.send('Eptura Backend is running!');
+});
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  res.on('finish', () => {
+    console.log(`Response Headers: ${JSON.stringify(res.getHeaders())}`);
+  });
+  next();
+});
+
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.message);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 async function initialize() {
