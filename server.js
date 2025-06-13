@@ -14,7 +14,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const allowedOrigins = ['https://eptura-frontend-12.vercel.app'];
+const allowedOrigins = [
+  'https://eptura-frontend-16.vercel.app', // <-- updated frontend URL
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
 
 app.use(express.json({ limit: '10mb' }));
 app.use(helmet());
