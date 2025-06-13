@@ -18,8 +18,6 @@ const allowedOrigins = [
   'https://eptura-frontend-12.vercel.app', // your deployed frontend
 ];
 
-
-app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(helmet());
 
