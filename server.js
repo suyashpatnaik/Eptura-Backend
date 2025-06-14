@@ -165,7 +165,7 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
-app.post('/api/chat', async (req, res) => {
+app.post('/chat', async (req, res) => {
   try {
     console.log('Received /api/chat request:', req.body); // Log incoming request
 
