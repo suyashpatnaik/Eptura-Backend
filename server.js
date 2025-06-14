@@ -312,8 +312,4 @@ async function initialize() {
 }
 initialize();
 
-const chatRouter = require('./routes/chat'); // adjust path if needed
-
-app.use('/api', chatRouter); // ✅ Mounts all /api routes
-
 module.exports = app;
