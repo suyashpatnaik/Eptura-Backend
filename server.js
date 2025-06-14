@@ -312,4 +312,19 @@ async function initialize() {
 }
 initialize();
 
+const chatRouter = require('./routes/chat'); // adjust path if needed
+
+app.use('/api', chatRouter); // ✅ Mounts all /api routes
+
 module.exports = app;
+
+const express = require('express');
+const router = express.Router();
+
+router.post('/chat', (req, res) => {
+  const { message } = req.body;
+  // Your chat logic here
+  res.json({ response: "ok" });
+});
+
+module.exports = router;
