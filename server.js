@@ -301,10 +301,23 @@ app.use((err, req, res, next) => {
 });
 
 app.post('/api/ask', (req, res) => {
+  const { prompt } = req.body;
+
+  // Map prompt keywords to image filenames
+  const imageMap = {
+    'workflow': 'workflow-module.jpg',
+    'dashboard': 'dashboard.png',
+    'sensor': 'sensor-mapping.png',
+    'asset': 'sample-asset.png'
+  };
+
+  let imageKey = Object.keys(imageMap).find(key => prompt && prompt.toLowerCase().includes(key));
+  const imageUrl = imageKey ? `/img/${imageMap[imageKey]}` : null;
+
   res.json({
-    text: "Here's the architecture diagram.",
-    image: "mockup.jpg", // Or a full URL if the image is hosted elsewhere
-    imageAlt: "System architecture"
+    text: `Here's the architecture diagram for: ${prompt}`,
+    image: imageUrl,
+    imageAlt: imageKey ? `Image for ${imageKey}` : 'No image'
   });
 });
 
