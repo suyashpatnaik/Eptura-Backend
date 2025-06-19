@@ -312,8 +312,7 @@ app.post('/api/ask', (req, res) => {
   };
 
   let imageKey = Object.keys(imageMap).find(key => prompt && prompt.toLowerCase().includes(key));
-  const imageUrl = imageKey ? `/img/${imageMap[imageKey]}` : null;
-
+  const imageUrl = imageKey ? `/images/${imageMap[imageKey]}` : null;
   res.json({
     text: `Here's the architecture diagram for: ${prompt}`,
     image: imageUrl,
