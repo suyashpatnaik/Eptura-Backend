@@ -295,6 +295,26 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
+app.post('/api/ask', (req, res) => {
+  const { prompt } = req.body;
+
+  // Map prompt keywords to image filenames
+  const imageMap = {
+    'workflow': 'workflow-module.jpg',
+    'dashboard': 'dashboard.png',
+    'sensor': 'sensor-mapping.png',
+    'asset': 'sample-asset.png'
+  };
+
+  let imageKey = Object.keys(imageMap).find(key => prompt && prompt.toLowerCase().includes(key));
+  const imageUrl = imageKey ? `/images/${imageMap[imageKey]}` : null;
+
+  res.json({
+    text: `Here's the architecture diagram for: ${prompt}`,
+    image: imageUrl,
+    imageAlt: imageKey ? `Image for ${imageKey}` : 'No image'
+  });
+});
 app.use((err, req, res, next) => {
   console.error(err.message);
   res.status(500).json({ error: 'Internal server error' });
