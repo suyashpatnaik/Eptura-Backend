@@ -38,6 +38,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use('/images', express.static('public/images'));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -297,6 +298,14 @@ app.use('*', (req, res) => {
 app.use((err, req, res, next) => {
   console.error(err.message);
   res.status(500).json({ error: 'Internal server error' });
+});
+
+app.post('/api/ask', (req, res) => {
+  res.json({
+    text: "Here's the architecture diagram.",
+    image: "mockup.jpg", // Or a full URL if the image is hosted elsewhere
+    imageAlt: "System architecture"
+  });
 });
 
 async function initialize() {
