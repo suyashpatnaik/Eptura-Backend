@@ -38,7 +38,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use('/images', express.static('public/images'));
+app.use('/images', express.static('public/img'));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -313,6 +313,7 @@ app.post('/api/ask', (req, res) => {
 
   let imageKey = Object.keys(imageMap).find(key => prompt && prompt.toLowerCase().includes(key));
   const imageUrl = imageKey ? `/images/${imageMap[imageKey]}` : null;
+
   res.json({
     text: `Here's the architecture diagram for: ${prompt}`,
     image: imageUrl,
