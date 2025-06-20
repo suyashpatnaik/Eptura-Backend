@@ -38,7 +38,9 @@ app.use(
   })
 );
 app.use(express.json());
-app.use('/images', express.static('public/img'));
+
+// Serve static images from public/images
+app.use('/images', express.static('public/images'));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -298,21 +300,27 @@ app.use('*', (req, res) => {
 app.post('/api/ask', (req, res) => {
   const { prompt } = req.body;
 
-  // Map prompt keywords to image filenames
-  const imageMap = {
-    'workflow': 'workflow-module.jpg',
-    'dashboard': 'dashboard.png',
-    'sensor': 'sensor-mapping.png',
-    'asset': 'sample-asset.png'
-  };
+  // Lowercase prompt for case-insensitive matching
+  const promptLower = prompt ? prompt.toLowerCase() : '';
 
-  let imageKey = Object.keys(imageMap).find(key => prompt && prompt.toLowerCase().includes(key));
-  const imageUrl = imageKey ? `/images/${imageMap[imageKey]}` : null;
+  // Default image and alt text
+  let imageUrl = null;
+  let imageAlt = 'No image';
+
+  // Check for keywords in the prompt
+  if (
+    promptLower.includes('image') ||
+    promptLower.includes('images') ||
+    promptLower.includes('work order')
+  ) {
+    imageUrl = '/images/workflow-module.jpg'; // Make sure this file exists in public/images
+    imageAlt = 'Workflow module image';
+  }
 
   res.json({
     text: `Here's the architecture diagram for: ${prompt}`,
     image: imageUrl,
-    imageAlt: imageKey ? `Image for ${imageKey}` : 'No image'
+    imageAlt: imageAlt
   });
 });
 app.use((err, req, res, next) => {
