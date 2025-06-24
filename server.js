@@ -299,29 +299,28 @@ app.use('*', (req, res) => {
 
 app.post('/api/ask', (req, res) => {
   const { prompt } = req.body;
-
-  // Lowercase prompt for case-insensitive matching
   const promptLower = prompt ? prompt.toLowerCase() : '';
 
-  // Default image and alt text
   let imageUrl = null;
   let imageAlt = 'No image';
 
-  // Check for keywords in the prompt
   if (
     promptLower.includes('image') ||
     promptLower.includes('images') ||
     promptLower.includes('work order')
   ) {
-    imageUrl = '/images/workflow-module.jpg'; // Make sure this file exists in public/images
+    imageUrl = '/images/workflow-module.jpg';
     imageAlt = 'Workflow module image';
   }
 
-  res.json({
+  const response = {
     text: `Here's the architecture diagram for: ${prompt}`,
     image: imageUrl,
     imageAlt: imageAlt
-  });
+  };
+
+  console.log('API response:', response); // <--- Add this line
+  res.json(response);
 });
 app.use((err, req, res, next) => {
   console.error(err.message);
