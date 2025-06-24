@@ -211,7 +211,7 @@ ${context ? `Use this:\n${context}` : ''}`
     ];
 
     const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+      model: process.env.OPENAI_MODEL || 'gpt-4-turbo',
       messages,
       max_tokens: 1000,
       temperature: 0.7
