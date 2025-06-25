@@ -211,7 +211,7 @@ ${context ? `Use this:\n${context}` : ''}`
     ];
 
     const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4-turbo',
+      model: process.env.OPENAI_MODEL || 'gpt-4o-turbo',
       messages,
       max_tokens: 1000,
       temperature: 0.7
@@ -297,30 +297,56 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-app.post('/api/ask', (req, res) => {
+app.post('/api/ask', async (req, res) => {
   const { prompt } = req.body;
-  const promptLower = prompt ? prompt.toLowerCase() : '';
 
-  let imageUrl = null;
-  let imageAlt = 'No image';
-
-  if (
-    promptLower.includes('image') ||
-    promptLower.includes('images') ||
-    promptLower.includes('work order')
-  ) {
-    imageUrl = '/images/workflow-module.jpg';
-    imageAlt = 'Workflow module image';
+  // Utility function to detect if user wants image
+  function wantsImage(prompt) {
+    const keywords = [
+      'image', 'picture', 'show me', 'visual', 'illustration',
+      'diagram', 'photo', 'images', 'pictures', 'display', 'graph', 'work order'
+    ];
+    const lowerPrompt = prompt.toLowerCase();
+    return keywords.some(keyword => lowerPrompt.includes(keyword));
   }
 
-  const response = {
-    text: `Here's the architecture diagram for: ${prompt}`,
-    image: imageUrl,
-    imageAlt: imageAlt
-  };
+  try {
+    // Use OpenAI for text
+    const chatResponse = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: 'You are an expert assistant for Eptura AI platform.' },
+        { role: 'user', content: prompt }
+      ],
+      max_tokens: 1000,
+      temperature: 0.7
+    });
 
-  console.log('API response:', response); // <--- Add this line
-  res.json(response);
+    const reply = chatResponse.choices[0].message.content;
+    let imageUrl = null;
+
+    // If prompt indicates user wants an image, generate one
+    if (wantsImage(prompt)) {
+      const imageResponse = await openai.images.generate({
+        model: 'dall-e-3',
+        prompt: `Illustration for: ${prompt}`,
+        n: 1,
+        size: '1024x1024'
+      });
+      imageUrl = imageResponse.data[0].url;
+    }
+
+    res.json({
+      text: reply,
+      image: imageUrl
+    });
+  } catch (error) {
+    console.error('Error in /api/ask:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Failed to generate response',
+      details: error.response?.data || error.message
+    });
+  }
 });
 app.use((err, req, res, next) => {
   console.error(err.message);
