@@ -341,6 +341,7 @@ app.post('/api/ask', async (req, res) => {
       text: reply,
       image: imageUrl
     });
+    console.log('Responded with:', { text: reply, image: imageUrl });
   } catch (error) {
     console.error('Error in /api/ask:', error.response?.data || error.message);
     res.status(500).json({
