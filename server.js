@@ -353,7 +353,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.post('/api/ask', (req, res) => {
+app.post('/api/ask', async (req, res) => {
   const { prompt } = req.body;
 
   // Map prompt keywords to image filenames
