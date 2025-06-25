@@ -297,21 +297,22 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
+
+// Utility function to detect if user wants image
+function wantsImage(prompt) {
+  const keywords = [
+    'image', 'picture', 'show me', 'visual', 'illustration',
+    'diagram', 'photo', 'images', 'pictures', 'display', 'graph', 'work order'
+  ];
+  const lowerPrompt = prompt.toLowerCase();
+  return keywords.some(keyword => lowerPrompt.includes(keyword));
+}
+
 app.post('/api/ask', async (req, res) => {
   const { prompt } = req.body;
 
-  // Utility function to detect if user wants image
-  function wantsImage(prompt) {
-    const keywords = [
-      'image', 'picture', 'show me', 'visual', 'illustration',
-      'diagram', 'photo', 'images', 'pictures', 'display', 'graph', 'work order'
-    ];
-    const lowerPrompt = prompt.toLowerCase();
-    return keywords.some(keyword => lowerPrompt.includes(keyword));
-  }
-
   try {
-    // Use OpenAI for text
+    // Get text response from OpenAI
     const chatResponse = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
